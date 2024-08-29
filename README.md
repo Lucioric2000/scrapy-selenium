@@ -29,6 +29,7 @@ In order to use a remote Selenium driver, specify `SELENIUM_COMMAND_EXECUTOR` in
     ```python
     SELENIUM_COMMAND_EXECUTOR = 'http://localhost:4444/wd/hub'
     ```
+Alternatively, you can omit the `SELENIUM_DRIVER_NAME`, `SELENIUM_DRIVER_EXECUTABLE_PATH` and `SELENIUM_DRIVER_ARGUMENTS` settings and pass a Selenium Webdriver instance to each SeleniumRequest instance at the meta parameter 'driver' key.
 
 2. Add the `SeleniumMiddleware` to the downloader middlewares:
     ```python
@@ -43,7 +44,14 @@ from scrapy_selenium import SeleniumRequest
 
 yield SeleniumRequest(url=url, callback=self.parse_result)
 ```
-The request will be handled by Selenium, and the request will have an additional `meta` key, named `driver` containing the selenium driver with the request processed.
+Optionally, you can provide a webdriver instance to the request, in the `meta` parameter with the key `driver`:
+```python
+from scrapy_selenium import SeleniumRequest
+
+yield SeleniumRequest(url=url, callback=self.parse_result, meta={'driver': driver})
+```
+Either you have to provide a driver instance or the settings `SELENIUM_DRIVER_NAME`, `SELENIUM_DRIVER_EXECUTABLE_PATH` and `SELENIUM_DRIVER_ARGUMENTS` should be set, so the Selenium middleware instance contains a webdriver instance.
+The request will be handled by Selenium, and the callback metod will be called, with a response object with a `meta` key named `driver`, containing the selenium driver with the request processed.
 ```python
 def parse_result(self, response):
     print(response.request.meta['driver'].title)

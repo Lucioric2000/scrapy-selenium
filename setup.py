@@ -1,34 +1,18 @@
-"""This module contains the packaging routine for the pybook package"""
+from setuptools import setup
+from os import path
 
-from setuptools import setup, find_packages
-try:
-    from pip.download import PipSession
-    from pip.req import parse_requirements
-except ImportError:
-    # It is quick hack to support pip 10 that has changed its internal
-    # structure of the modules.
-    from pip._internal.download import PipSession
-    from pip._internal.req.req_file import parse_requirements
+# with open('requirements.txt') as reqh:
+#     install_reqs = reqh.readlines()
 
+# with open(path.join(path.dirname(__file__), 'VERSION')) as v:
+#     VERSION = v.readline().strip()
 
-def get_requirements(source):
-    """Get the requirements from the given ``source``
-
-    Parameters
-    ----------
-    source: str
-        The filename containing the requirements
-
-    """
-
-    install_reqs = parse_requirements(filename=source, session=PipSession())
-
-    return [str(ir.req) for ir in install_reqs]
-
+# with open('README.md') as f:
+#     long_description = f.read()
 
 setup(
-    packages=find_packages(),
-    install_requires=get_requirements('requirements/requirements.txt')
+    # packages=find_packages(),
+    # install_requires=install_reqs,
 )
 
 
