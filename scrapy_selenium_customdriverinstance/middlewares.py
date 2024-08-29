@@ -107,15 +107,17 @@ class SeleniumMiddleware:
             return None
 
         if 'driver' in request.meta:
-            self.driver = request.meta['driver']
+            driver = request.meta['driver']
+        else:
+            driver = self.driver
 
-        if self.driver is None:
+        if driver is None:
             raise NotConfigured('SELENIUM_DRIVER_NAME must be set or a driver instance must be provided to each request as the "driver" meta key')
 
-        self.driver.get(request.url)
+        driver.get(request.url)
 
         for cookie_name, cookie_value in request.cookies.items():
-            self.driver.add_cookie(
+            driver.add_cookie(
                 {
                     'name': cookie_name,
                     'value': cookie_value
@@ -123,23 +125,23 @@ class SeleniumMiddleware:
             )
 
         if request.wait_until:
-            WebDriverWait(self.driver, request.wait_time).until(
+            WebDriverWait(driver, request.wait_time).until(
                 request.wait_until
             )
 
         if request.screenshot:
-            request.meta['screenshot'] = self.driver.get_screenshot_as_png()
+            request.meta['screenshot'] = driver.get_screenshot_as_png()
 
         if request.script:
-            self.driver.execute_script(request.script)
+            driver.execute_script(request.script)
 
-        body = str.encode(self.driver.page_source)
+        body = str.encode(driver.page_source)
 
         # Expose the driver via the "meta" attribute
-        request.meta.update({'driver': self.driver})
+        request.meta.update({'driver': driver})
 
         return HtmlResponse(
-            self.driver.current_url,
+            driver.current_url,
             body=body,
             encoding='utf-8',
             request=request
@@ -147,6 +149,6 @@ class SeleniumMiddleware:
 
     def spider_closed(self):
         """Shutdown the driver when spider is closed"""
-
-        self.driver.quit()
+        if self.driver is not None:
+            self.driver.quit()
 
