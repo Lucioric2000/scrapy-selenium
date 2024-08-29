@@ -6,9 +6,11 @@ from scrapy import signals
 from scrapy.exceptions import NotConfigured
 from scrapy.http import HtmlResponse
 from selenium.webdriver.support.ui import WebDriverWait
+import logging
 
 from .http import SeleniumRequest
 
+logger = logging.getLogger(__name__)
 
 class SeleniumMiddleware:
     """Scrapy middleware handling the requests using selenium"""
@@ -30,6 +32,9 @@ class SeleniumMiddleware:
         command_executor: str
             Selenium remote server endpoint
         """
+        if driver_name is None:
+            self.driver = None
+            return
 
         webdriver_base_path = f'selenium.webdriver.{driver_name}'
 
@@ -76,7 +81,8 @@ class SeleniumMiddleware:
         driver_arguments = crawler.settings.get('SELENIUM_DRIVER_ARGUMENTS')
 
         if driver_name is None:
-            raise NotConfigured('SELENIUM_DRIVER_NAME must be set')
+            #raise NotConfigured('SELENIUM_DRIVER_NAME must be set')
+            logger.warning("SELENIUM_DRIVER_NAME not set, which means you should provide a Selenium driver instance to eacgh request as the 'driver' meta key")
 
         if driver_executable_path is None and command_executor is None:
             raise NotConfigured('Either SELENIUM_DRIVER_EXECUTABLE_PATH '
@@ -99,6 +105,12 @@ class SeleniumMiddleware:
 
         if not isinstance(request, SeleniumRequest):
             return None
+
+        if 'driver' in request.meta:
+            self.driver = request.meta['driver']
+
+        if self.driver is None:
+            raise NotConfigured('SELENIUM_DRIVER_NAME must be set or a driver instance must be provided to each request as the "driver" meta key')
 
         self.driver.get(request.url)
 
