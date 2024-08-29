@@ -5,7 +5,7 @@ Scrapy middleware to handle javascript pages using selenium.
 
 ## Installation
 ```
-$ pip install scrapy-selenium
+$ pip install scrapy-selenium-customdriverinstance
 ```
 You should use **python>=3.6**. 
 You will also need one of the Selenium [compatible browsers](http://www.seleniumhq.org/about/platforms.jsp).
@@ -51,7 +51,6 @@ from scrapy_selenium_customdriverinstance import SeleniumRequest
 yield SeleniumRequest(url=url, callback=self.parse_result, meta={'driver': driver})
 ```
 Either you have to provide a driver instance or the settings `SELENIUM_DRIVER_NAME`, `SELENIUM_DRIVER_EXECUTABLE_PATH` and `SELENIUM_DRIVER_ARGUMENTS` should be set, so the Selenium middleware instance contains a webdriver instance.
-### Response
 The request will be handled by Selenium, and the callback metod will be called, with a response object with a `meta` key named `driver`, containing the selenium driver with the request processed.
 ```python
 def parse_result(self, response):
@@ -84,7 +83,7 @@ yield SeleniumRequest(
 ```
 
 #### `screenshot`
-When used, selenium will take a screenshot of the page and the binary data of the .png captured will be added to the response `meta`:
+When used, Selenium will take a screenshot of the page and the binary data of the .png captured will be added to the response `meta`:
 ```python
 yield SeleniumRequest(
     url=url,
@@ -99,7 +98,7 @@ def parse_result(self, response):
 ```
 
 #### `script`
-When used, selenium will execute custom JavaScript code.
+When used, Selenium will execute custom JavaScript code.
 ```python
 yield SeleniumRequest(
     url=url,
