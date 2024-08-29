@@ -12,41 +12,41 @@ You will also need one of the Selenium [compatible browsers](http://www.selenium
 
 ## Configuration
 1. Add the browser to use, the path to the driver executable, and the arguments to pass to the executable to the scrapy settings:
-    ```python
-    from shutil import which
+```python
+from shutil import which
 
-    SELENIUM_DRIVER_NAME = 'firefox'
-    SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
-    SELENIUM_DRIVER_ARGUMENTS=['-headless']  # '--headless' if using chrome instead of firefox
-    ```
+SELENIUM_DRIVER_NAME = 'firefox'
+SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
+SELENIUM_DRIVER_ARGUMENTS=['-headless']  # '--headless' if using chrome instead of firefox
+```
 
 Optionally, set the path to the browser executable:
-    ```python
-    SELENIUM_BROWSER_EXECUTABLE_PATH = which('firefox')
-    ```
+```python
+SELENIUM_BROWSER_EXECUTABLE_PATH = which('firefox')
+```
 
 In order to use a remote Selenium driver, specify `SELENIUM_COMMAND_EXECUTOR` instead of `SELENIUM_DRIVER_EXECUTABLE_PATH`:
-    ```python
-    SELENIUM_COMMAND_EXECUTOR = 'http://localhost:4444/wd/hub'
-    ```
+```python
+SELENIUM_COMMAND_EXECUTOR = 'http://localhost:4444/wd/hub'
+```
 Alternatively, you can omit the `SELENIUM_DRIVER_NAME`, `SELENIUM_DRIVER_EXECUTABLE_PATH` and `SELENIUM_DRIVER_ARGUMENTS` settings and pass a Selenium Webdriver instance to each SeleniumRequest instance at the meta parameter 'driver' key.
 
 2. Add the `SeleniumMiddleware` to the downloader middlewares:
-    ```python
-    DOWNLOADER_MIDDLEWARES = {
-        'scrapy_selenium.SeleniumMiddleware': 800
-    }
-    ```
-## Usage
-Use the `scrapy_selenium.SeleniumRequest` instead of the scrapy built-in `Request` like below:
 ```python
-from scrapy_selenium import SeleniumRequest
+DOWNLOADER_MIDDLEWARES = {
+    'scrapy_selenium_customdriverinstance.SeleniumMiddleware': 800
+}
+```
+## Usage
+Use the `scrapy_selenium_customdriverinstance.SeleniumRequest` instead of the scrapy built-in `Request` like below:
+```python
+from scrapy_selenium_customdriverinstance import SeleniumRequest
 
 yield SeleniumRequest(url=url, callback=self.parse_result)
 ```
 Optionally, you can provide a webdriver instance to the request, in the `meta` parameter with the key `driver`:
 ```python
-from scrapy_selenium import SeleniumRequest
+from scrapy_selenium_customdriverinstance import SeleniumRequest
 
 yield SeleniumRequest(url=url, callback=self.parse_result, meta={'driver': driver})
 ```
@@ -65,7 +65,7 @@ def parse_result(self, response):
 ```
 
 ### Additional arguments
-The `scrapy_selenium.SeleniumRequest` accepts 4 additional arguments:
+The `scrapy_selenium_customdriverinstance.SeleniumRequest` accept 4 additional arguments:
 
 #### `wait_time` / `wait_until`
 
@@ -90,7 +90,8 @@ yield SeleniumRequest(
     callback=self.parse_result,
     screenshot=True
 )
-
+```
+```python
 def parse_result(self, response):
     with open('image.png', 'wb') as image_file:
         image_file.write(response.meta['screenshot'])
